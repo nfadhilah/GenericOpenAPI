@@ -16,10 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped(_ => new SqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCors();
-builder.Services.AddSwaggerGen(o =>
-{
-    o.OperationFilter<SwaggerCustomHeaderFilter>();
-});
+builder.Services.AddSwaggerGen(o => { o.OperationFilter<SwaggerCustomHeaderFilter>(); });
 
 var app = builder.Build();
 
@@ -29,7 +26,6 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    
 }
 
 
@@ -56,7 +52,8 @@ app.Use(async (context, next) =>
                 Message = "Invalid Secret Key",
                 Data = null
             };
-            await context.Response.WriteAsync(JsonSerializer.Serialize(responseBody));
+            await context.Response.WriteAsync(JsonSerializer.Serialize(responseBody,
+                new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
         }
     }
     catch (Exception e)
@@ -93,7 +90,6 @@ app.MapGet("/realisasi_pendapatan/{tgl}", async (string tgl, SqlConnection db) =
         return Results.Ok(result);
     })
     .WithName("GetRealisasiPendapatan");
-
 
 
 app.Run();
