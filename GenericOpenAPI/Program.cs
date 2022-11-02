@@ -15,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddScoped(_ => new SqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddCors();
 builder.Services.AddSwaggerGen(o =>
 {
     o.OperationFilter<SwaggerCustomHeaderFilter>();
@@ -28,7 +29,15 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    
 }
+
+
+// global cors policy
+app.UseCors(x => x
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader());
 
 //app.UseHttpsRedirection();
 
@@ -83,5 +92,7 @@ app.MapGet("/realisasi_pendapatan/{tgl}", async (string tgl, SqlConnection db) =
         return Results.Ok(result);
     })
     .WithName("GetRealisasiPendapatan");
+
+
 
 app.Run();
