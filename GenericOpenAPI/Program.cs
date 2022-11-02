@@ -45,7 +45,8 @@ app.Use(async (context, next) =>
 {
     try
     {
-        if (context.Request.Headers.TryGetValue("X-Authorization", out var authHeader) && authHeader != builder.Configuration.GetSection("SecretKey").Value)
+        context.Request.Headers.TryGetValue("X-Authorization", out var authHeader);
+        if (authHeader != builder.Configuration.GetSection("SecretKey").Value)
         {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
