@@ -67,7 +67,7 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.MapGet("/realisasi_pendapatan/{tgl}", async (string tgl, SqlConnection db) =>
     {
-        var result = new BaseResponse<IEnumerable<RealisasiPendapatan>>();
+        var result = new BaseResponse<IEnumerable<object>>();
 
         if (!Regex.IsMatch(tgl, "^\\d{4}-((0[1-9])|(1[012]))-((0[1-9]|[12]\\d)|3[01])$"))
         {
@@ -79,10 +79,8 @@ app.MapGet("/realisasi_pendapatan/{tgl}", async (string tgl, SqlConnection db) =
         }
 
         const string query = "EXEC GET_REALPEND @tgl";
-        var data =
-            await db.QueryAsync<RealisasiPendapatan>(query, new { tgl });
-        return Results.Ok(new BaseResponse<IEnumerable<RealisasiPendapatan>>{ Data = data});
-
+        result.Data = await db.QueryAsync<RealisasiPendapatan>(query, new { tgl });
+        return Results.Ok(result);
     })
     .WithName("GetRealisasiPendapatan");
 
